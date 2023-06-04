@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
         effectSound = new SoundPool(5, AudioManager.USE_DEFAULT_STREAM_TYPE,0);
         effectVolumn = 1;
+
         specialShotBtn = findViewById(R.id.specialShotBtn);
         joyStick = findViewById(R.id.joyStick);
         scoreTv = findViewById(R.id.score);
@@ -96,16 +97,16 @@ public class MainActivity extends AppCompatActivity {
         bulletCount.setText(spaceInvadersView.getPlayer().getBulletsCount()+"/30");//StarShipSprite 에서 받아온 정보를 토대로 현재 총알 개수와 점수를 설정해서 각 View 에 보여줌
         scoreTv.setText(Integer.toString(spaceInvadersView.getScore()));
 
-        effectSoundList = new ArrayList<>();
+        effectSoundList = new ArrayList<>();// 각각의 효과음 로드
         effectSoundList.add(PLAYER_SHOT, effectSound.load(MainActivity.this, R.raw.player_shot_sound,1));
         effectSoundList.add(PLAYER_HURT, effectSound.load(MainActivity.this, R.raw.player_hurt_sound,1));
         effectSoundList.add(PLAYER_RELOAD, effectSound.load(MainActivity.this, R.raw.reload_sound,1));
         effectSoundList.add(PLAYER_GET_ITEM, effectSound.load(MainActivity.this, R.raw.player_get_item_sound,1));
-        bgMusic.start();    //음악이 바뀌면서 재생
+        bgMusic.start();    //배경음악 재생
     }
     private void changeBgMusic(){
-        bgMusic = MediaPlayer.create(this,bgMusicList.get(bgMusicIndex));
-        bgMusic.start();
+        bgMusic = MediaPlayer.create(this,bgMusicList.get(bgMusicIndex));//bgMusicIndex 에 해당하는 음악으로 새로운 배경음악 생성
+        bgMusic.start();// 생성된 배경음악 재생
         bgMusic.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -114,31 +115,32 @@ public class MainActivity extends AppCompatActivity {
         });
         bgMusicIndex++;
         //인덱스 반복(음악 갯수만큼 바뀜)
-        bgMusicIndex = bgMusicIndex % bgMusicList.size();
+        bgMusicIndex = bgMusicIndex % bgMusicList.size();// bgMusicIndex 값 설정 => bgMusicList 의 사이즈를 bgMusicIndex 의 값으로 나눈 나머지
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause() {// 액티비티 일시 정지
         super.onPause();
-        bgMusic.pause();
-        spaceInvadersView.pause();
+        bgMusic.pause(); // 배경음악 일시 정지
+        spaceInvadersView.pause(); // 게임 일시 정지
     }
 
     public static void effectSound(int flag){
+        // 괄호안 순서대로 ( 재생할 효과음 리소스 ID, 효과음 볼륨 , 효과음 볼륨, 재생 우선순위(기본값) , 반복재생 여부 (반복하지 않음) , 재생속도(기본값))
         effectSound.play(effectSoundList.get(flag), effectVolumn, effectVolumn,
                 0,0,1.0f);//soundpool 실행
     }
 
     private void setBtnBehavior(){
-        joyStick.setAutoReCenterButton(true);
-        joyStick.setOnKeyListener(new View.OnKeyListener() {
+        joyStick.setAutoReCenterButton(true);// 조이스틱 자동 중앙 재설정 기능
+        joyStick.setOnKeyListener(new View.OnKeyListener() {//조이스틱의 키 이벤트를 받아와서 로그에 키 코드를 출력함
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 Log.d("KeyCode",Integer.toString(i));
                 return false;
             }
         });
-        joyStick.setOnMoveListener(new JoystickView.OnMoveListener() {
+        joyStick.setOnMoveListener(new JoystickView.OnMoveListener() {// 이동 각도와 세기에 따라 플레이어 이동시킴
             @Override
             public void onMove(int angle, int strength) {
                 if(angle >67.5 && angle <112.5){    //위
@@ -168,9 +170,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
+        // 버튼이 눌렸을때 spaceInvadersView.getPlayer() 의 fire() 메서드를 호출시킴
         fireBtn.setOnClickListener(view -> spaceInvadersView.getPlayer().fire());
+        // 버튼이 눌렸을때 spaceInvadersView.getPlayer() 의 reloadBullets() 메서드를 호출시킴
         reloadBtn.setOnClickListener(view -> spaceInvadersView.getPlayer().reloadBullets());
+
         pauseBtn.setOnClickListener(view -> {
             spaceInvadersView.pause();  //spaceInvadersView 일시정지
             PauseDialog pauseDialog = new PauseDialog(MainActivity.this);
@@ -185,12 +189,13 @@ public class MainActivity extends AppCompatActivity {
         specialShotBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(spaceInvadersView.getPlayer().getSpecialShotCount() >= 0)
-                    spaceInvadersView.getPlayer().specialShot();
+                if(spaceInvadersView.getPlayer().getSpecialShotCount() >= 0)// 스페셜 샷 카운트가 0보다 크거나 같을경우
+                    spaceInvadersView.getPlayer().specialShot(); // spaceInvadersView.getPlayer() 에서 specialShot() 메서드를 호출해옴
             }
         });
     }
 
+    // 뒤로가기 버튼 누르면 PauseDialog 를 띄움
     @Override
     public void onBackPressed() {
         spaceInvadersView.pause();

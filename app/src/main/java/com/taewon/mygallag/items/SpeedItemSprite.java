@@ -44,6 +44,6 @@ public class SpeedItemSprite extends Sprite {
             dy *= -1;
             return;
         }
-        super.move();
+        super.move();// 위 조건들을 만족하지 않을경우 슈퍼클래스의 move 사용하여 아이템 이동
     }
 }
